@@ -1,0 +1,39 @@
+#!/bin/bash
+
+#/***************************************************************************
+# *   Copyright (C) 2018 Daniel Mueller (deso@posteo.net)                   *
+# *                                                                         *
+# *   This program is free software: you can redistribute it and/or modify  *
+# *   it under the terms of the GNU General Public License as published by  *
+# *   the Free Software Foundation, either version 3 of the License, or     *
+# *   (at your option) any later version.                                   *
+# *                                                                         *
+# *   This program is distributed in the hope that it will be useful,       *
+# *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+# *   GNU General Public License for more details.                          *
+# *                                                                         *
+# *   You should have received a copy of the GNU General Public License     *
+# *   along with this program.  If not, see <http://www.gnu.org/licenses/>. *
+# ***************************************************************************/
+
+function __mpc_complete()
+{
+  local word=${COMP_WORDS[COMP_CWORD]}
+  local words=$(mpd-complete '/tmp/mpd/socket')
+
+  if [ $? -eq 0 ]; then
+    local IFS=$'\n'
+    # The single quotes are of paramount importance. Without them we run
+    # into problems of missing file names or broken completions once a
+    # file contains a single quote/apostrophe because such a single
+    # quote supersedes the new line symbol used for separation causing
+    # only the next new line after a closing single quote to be
+    # acknowledged as separator.
+    # TODO: We need to find out why single quoting ${word} does not
+    #       work.
+    COMPREPLY=($(compgen -W '${words}' -- "${word}"))
+  fi
+}
+
+complete -o filenames -F __mpc_complete mpc
