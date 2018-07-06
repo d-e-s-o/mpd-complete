@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #/***************************************************************************
-# *   Copyright (C) 2015 Daniel Mueller (deso@posteo.net)                   *
+# *   Copyright (C) 2015,2018 Daniel Mueller (deso@posteo.net)              *
 # *                                                                         *
 # *   This program is free software: you can redistribute it and/or modify  *
 # *   it under the terms of the GNU General Public License as published by  *
@@ -25,10 +25,18 @@ from argparse import (
 from mpd import (
   MPDClient as MpdClient,
 )
+from os.path import (
+  join,
+)
 from sys import (
   argv as sysargv,
   exit,
 )
+
+
+def trail(path):
+  """Ensure the path has a trailing separator."""
+  return join(path, "")
 
 
 def setupArgumentParser():
@@ -48,6 +56,10 @@ def main(argv):
     assert len(element) == 1, element
     assert "directory" in element or "file" in element or "playlist" in element, element
     value, = element.values()
+
+    if "directory" in element:
+      return trail(value)
+
     return value
 
   parser = setupArgumentParser()
